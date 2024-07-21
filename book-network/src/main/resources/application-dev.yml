@@ -1,7 +1,7 @@
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/book_social_network
-    user: username
+    username: username
     password: password
     driver-class-name: org.postgresql.Driver
   jpa:
