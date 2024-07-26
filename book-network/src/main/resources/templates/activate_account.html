@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        html {
+            font-size: 62.5%;
+        }
+        h1 {
+            font-size: 3.6rem;
+        }
+        p, a {
+            font-size: 2.4rem;
+            font-weight: 500;
+        }
+        .container {
+            background-color: white;
+            box-shadow: gray 0px 0px 10px;
+            width: 70%;
+            margin: auto;
+            border-radius: 5px;
+            padding: 20px;
+        }
+        .activation-code {
+            font-size: 3.6rem;
+            width: 100%;
+            text-align: center;
+            padding: 10px 0px;
+            font-weight: 700;
+        }
+        .activation-link {
+            width: 300px;
+            padding: 10px;
+            display: block;
+            background-color: #5a5af6;
+            margin: auto;
+            text-align: center;
+            border-radius: 10px;
+            box-shadow: 0px 0px 1px rgba(0,0,0,0.4);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Account Activation</h1>
+        <p th:text="'Hello ' + ${username} + ','"></p>
+        <p>
+            Thank you for signing up! Please use the
+            following activation code to activate
+            your account
+        </p>
+        <div class="activation-code">
+            <span th:text="${activation_code}">
+            </span>
+        </div>
+        <div class="activation-link">
+            <a th:href="${confirmationUrl}" target="_blank">Activate your account</a>
+        </div>
+    </div>
+</body>
+</html>
