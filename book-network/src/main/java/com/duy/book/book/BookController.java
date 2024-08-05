@@ -16,7 +16,6 @@ import org.springframework.web.multipart.MultipartFile;
 @Tag(name="Book")
 public class BookController {
     private final BookService service;
-    private final BookService bookService;
 
     @PostMapping
     public ResponseEntity<Integer> saveBook(
@@ -89,7 +88,7 @@ public class BookController {
             @PathVariable("book-id") Integer bookId,
             Authentication connectedUser
     ) {
-        return ResponseEntity.ok(bookService.borrowBook(bookId, connectedUser));
+        return ResponseEntity.ok(service.borrowBook(bookId, connectedUser));
     }
 
     @PatchMapping("/borrow/return/{book-id}")
@@ -97,7 +96,7 @@ public class BookController {
             @PathVariable("book-id") Integer bookId,
             Authentication connectedUser
     ) {
-        return ResponseEntity.ok(bookService.returnBorrowBook(bookId, connectedUser));
+        return ResponseEntity.ok(service.returnBorrowBook(bookId, connectedUser));
     }
 
     @PatchMapping("/borrow/return/approve/{book-id}")
@@ -105,7 +104,7 @@ public class BookController {
             @PathVariable("book-id") Integer bookId,
             Authentication connectedUser
     ) {
-        return ResponseEntity.ok(bookService.approveReturnBorrowBook(bookId, connectedUser));
+        return ResponseEntity.ok(service.approveReturnBorrowBook(bookId, connectedUser));
     }
 
     @PostMapping(value = "/cover/{book-id}", consumes = "multipart/form-data")
