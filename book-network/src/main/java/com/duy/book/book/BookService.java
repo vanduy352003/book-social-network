@@ -147,7 +147,10 @@ public class BookService {
         }
 
         User user = ((User) connectedUser.getPrincipal());
-        if (!Objects.equals(book.getOwner().getId(), user.getId())) {
+        System.out.println("Book owner: " + book.getOwner().getId());
+        System.out.println("User Id: " + user.getId());
+
+        if (Objects.equals(book.getOwner().getId(), user.getId())) {
             throw new OperationNotPermittedException("You cannot borrow your own book");
         }
         // Change from check current user only to all user
@@ -175,7 +178,7 @@ public class BookService {
         }
 
         User user = ((User) connectedUser.getPrincipal());
-        if (!Objects.equals(book.getOwner().getId(), user.getId())) {
+        if (Objects.equals(book.getOwner().getId(), user.getId())) {
             throw new OperationNotPermittedException("You cannot borrow your own book");
         }
 
@@ -193,8 +196,10 @@ public class BookService {
         }
 
         User user = ((User) connectedUser.getPrincipal());
+        System.out.println("Book owner: " + book.getOwner().getId());
+
         if (!Objects.equals(book.getOwner().getId(), user.getId())) {
-            throw new OperationNotPermittedException("You cannot borrow your own book");
+            throw new OperationNotPermittedException("You cannot return a book you not own book");
         }
 
         BookTransactionHistory bookTransactionHistory = transactionHistoryRepository.findByBookIdAndOwnerId(book.getId(), user.getId())
