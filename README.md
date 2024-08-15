@@ -29,3 +29,9 @@ A full-stack web application for user that need to share or finding their favori
 -   Authentication Guard
 -   OpenAPI Generator for Angular
 -   Bootstrap
+
+> UPCOMMING FEATURES/IMPLEMENT
+> Login with google, auth by jwt
+> Implement CI/CD pipeline, ...
+> Immigrate JWT auth to Keycloak
+
