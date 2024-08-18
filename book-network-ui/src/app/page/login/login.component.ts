@@ -6,6 +6,7 @@ import {Router} from "@angular/router";
 import {AuthenticationService} from "../../services/services/authentication.service";
 import {Token} from "@angular/compiler";
 import {TokenService} from "../../services/token/token.service";
+import {GoogleAuthServiceService} from "../../services/GoogleAuth/google-auth-service.service";
 
 @Component({
   selector: 'app-login',
@@ -26,7 +27,8 @@ export class LoginComponent {
   constructor(
     private router: Router,
     private authService: AuthenticationService,
-    private tokenService: TokenService
+    private tokenService: TokenService,
+    private googleAuthService: GoogleAuthServiceService
   ) {
   }
 
@@ -48,6 +50,11 @@ export class LoginComponent {
         }
       }
     })
+  }
+
+  loginGoogle() {
+    this.googleAuthService.login();
+    console.log(this.googleAuthService.accessToken);
   }
 
   register() {

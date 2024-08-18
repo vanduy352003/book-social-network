@@ -1,6 +1,24 @@
 <div class="container-fluid card login_container">
   <h3 class="text-center mt-3">Login</h3>
   <hr>
+  <div class="d-flex justify-content-center align-items-center">
+    <div id="g_id_onload"
+         data-client_id="897840734961-7mmsjme05o2av1c15q9rlhak755leg74.apps.googleusercontent.com"
+         data-context="use"
+         data-ux_mode="popup"
+         data-login_uri="http://localhost:8088/api/v1/auth/authenticate/google"
+         data-auto_prompt="false">
+    </div>
+
+    <div class="g_id_signin"
+         data-type="standard"
+         data-shape="rectangular"
+         data-theme="outline"
+         data-text="signin_with"
+         data-size="large"
+         data-logo_alignment="left">
+    </div>
+  </div>
   <div class="alert alert-danger" role="alert" *ngIf="errorMsg.length">
     <p *ngFor="let msg of errorMsg">{{ msg }}</p>
   </div>

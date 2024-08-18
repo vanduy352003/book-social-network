@@ -29,6 +29,8 @@ spring:
         timeout: 3000
         writetimeout: 500
 
+
+
 application:
   security:
     jwt:
@@ -40,5 +42,7 @@ application:
   file:
     upload:
       photos-output-path: ./upload
+  google:
+    clientId: 897840734961-7mmsjme05o2av1c15q9rlhak755leg74.apps.googleusercontent.com
 server:
   port: 8088

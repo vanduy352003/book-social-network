@@ -2,26 +2,35 @@ package com.duy.book.auth;
 
 import com.duy.book.email.EmailService;
 import com.duy.book.email.EmailTemplateName;
+import com.duy.book.exception.OperationNotPermittedException;
 import com.duy.book.role.RoleRepository;
 import com.duy.book.security.JwtService;
 import com.duy.book.user.Token;
 import com.duy.book.user.TokenRepository;
 import com.duy.book.user.User;
 import com.duy.book.user.UserRepository;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import com.google.api.client.http.HttpTransport;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.JsonFactory;
+import com.google.api.client.json.gson.GsonFactory;
 import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -36,6 +45,8 @@ public class AuthenticationService {
     private final JwtService jwtService;
     @Value("${application.mailing.frontend.activation-url}")
     private String activationUrl;
+    @Value("${application.google.clientId}")
+    private String googleClientId;
 
     public void register(RegistrationRequest request) throws MessagingException {
         var userRole = roleRepository.findByName("USER")
@@ -119,5 +130,64 @@ public class AuthenticationService {
         userRepository.save(user);
         savedToken.setValidatedAt(LocalDateTime.now());
         tokenRepository.save(savedToken);
+    }
+
+
+    public AuthenticationResponse authenticateWithGoogle(Map<String, String> formData, String csrfTokenCookieValue) throws GeneralSecurityException, IOException, MessagingException {
+        String csrfToken = formData.get("g_csrf_token");
+        if (csrfTokenCookieValue == null) {
+            throw new OperationNotPermittedException("No csrf token in Cookie");
+        }
+        if (csrfToken == null) {
+            throw new OperationNotPermittedException("No csrf token in post body");
+        }
+        if (!csrfToken.equals(csrfTokenCookieValue)) {
+            throw new OperationNotPermittedException("Invalid csrf token");
+        }
+
+        GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new GsonFactory())
+                .setAudience(Collections.singletonList(googleClientId))
+                .build();
+
+        GoogleIdToken idToken =  verifier.verify(formData.get("credential"));
+        if (idToken == null) {
+            throw new OperationNotPermittedException("No id token");
+        }
+
+        GoogleIdToken.Payload payload = idToken.getPayload();
+        // Print user identifier
+        String userId = payload.getSubject();
+        System.out.println("User ID: " + userId);
+        System.out.println("Payload " + payload);
+
+        // Get profile information from payload
+        String email = payload.getEmail();
+        Optional<User> user = userRepository.findByEmail(email);
+
+        if (user.isEmpty()) {
+            var userRole = roleRepository.findByName("USER")
+                    .orElseThrow(() -> new IllegalStateException("Role USER not found"));
+            var newUser = User.builder()
+                    .firstname((String) payload.get("given_name"))
+                    .lastname((String) payload.get("family_name"))
+                    .email(email)
+                    .accountLocked(false)
+                    .enabled(true)
+                    .roles(List.of(userRole))
+                    .build();
+            userRepository.save(newUser);
+        }
+
+        user = userRepository.findByEmail(email);
+        var auth = new UsernamePasswordAuthenticationToken(user.get(), null, user.get().getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(auth);
+
+        var claims = new HashMap<String, Object>();
+        claims.put("fullname", user.get().fullName());
+        var jwtToken = jwtService.generateToken(claims, user.get());
+
+        return AuthenticationResponse.builder()
+                .token(jwtToken)
+                .build();
     }
 }
