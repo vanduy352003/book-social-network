@@ -133,38 +133,25 @@ public class AuthenticationService {
     }
 
 
-    public AuthenticationResponse authenticateWithGoogle(Map<String, String> formData, String csrfTokenCookieValue) throws GeneralSecurityException, IOException, MessagingException {
-        String csrfToken = formData.get("g_csrf_token");
-        if (csrfTokenCookieValue == null) {
-            throw new OperationNotPermittedException("No csrf token in Cookie");
-        }
-        if (csrfToken == null) {
-            throw new OperationNotPermittedException("No csrf token in post body");
-        }
-        if (!csrfToken.equals(csrfTokenCookieValue)) {
-            throw new OperationNotPermittedException("Invalid csrf token");
-        }
-
+    public AuthenticationResponse authenticateWithGoogle(String idTokenString) throws GeneralSecurityException, IOException {
         GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new GsonFactory())
                 .setAudience(Collections.singletonList(googleClientId))
                 .build();
 
-        GoogleIdToken idToken =  verifier.verify(formData.get("credential"));
+        GoogleIdToken idToken =  verifier.verify(idTokenString);
         if (idToken == null) {
             throw new OperationNotPermittedException("No id token");
         }
 
         GoogleIdToken.Payload payload = idToken.getPayload();
-        // Print user identifier
         String userId = payload.getSubject();
         System.out.println("User ID: " + userId);
         System.out.println("Payload " + payload);
 
-        // Get profile information from payload
         String email = payload.getEmail();
-        Optional<User> user = userRepository.findByEmail(email);
+        User user = userRepository.findByEmail(email).orElse(null);
 
-        if (user.isEmpty()) {
+        if (user == null) {
             var userRole = roleRepository.findByName("USER")
                     .orElseThrow(() -> new IllegalStateException("Role USER not found"));
             var newUser = User.builder()
@@ -175,16 +162,15 @@ public class AuthenticationService {
                     .enabled(true)
                     .roles(List.of(userRole))
                     .build();
-            userRepository.save(newUser);
+            user = userRepository.save(newUser);
         }
 
-        user = userRepository.findByEmail(email);
-        var auth = new UsernamePasswordAuthenticationToken(user.get(), null, user.get().getAuthorities());
+        var auth = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(auth);
 
         var claims = new HashMap<String, Object>();
-        claims.put("fullname", user.get().fullName());
-        var jwtToken = jwtService.generateToken(claims, user.get());
+        claims.put("fullname", user.fullName());
+        var jwtToken = jwtService.generateToken(claims, user);
 
         return AuthenticationResponse.builder()
                 .token(jwtToken)

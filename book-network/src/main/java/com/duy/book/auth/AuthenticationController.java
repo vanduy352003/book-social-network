@@ -47,10 +47,8 @@ public class AuthenticationController {
 
     @PostMapping("/authenticate/google")
     public ResponseEntity<AuthenticationResponse> googleAuthenticate(
-            @RequestParam Map<String, String> formData,
-            @CookieValue(value = "g_csrf_token") String csrfTokenCookieValue
-    ) throws GeneralSecurityException, IOException, MessagingException {
-        System.out.println(formData);
-        return ResponseEntity.ok(service.authenticateWithGoogle(formData, csrfTokenCookieValue));
+            @RequestBody String idToken
+    ) throws GeneralSecurityException, IOException {
+        return ResponseEntity.ok(service.authenticateWithGoogle(idToken));
     }
 }

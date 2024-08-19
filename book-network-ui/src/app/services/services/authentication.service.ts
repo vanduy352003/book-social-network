@@ -14,6 +14,8 @@ import { Authenticate$Params } from '../fn/authentication/authenticate';
 import { AuthenticationResponse } from '../models/authentication-response';
 import { confirm } from '../fn/authentication/confirm';
 import { Confirm$Params } from '../fn/authentication/confirm';
+import { googleAuthenticate } from '../fn/authentication/google-authenticate';
+import { GoogleAuthenticate$Params } from '../fn/authentication/google-authenticate';
 import { register } from '../fn/authentication/register';
 import { Register$Params } from '../fn/authentication/register';
 
@@ -73,6 +75,31 @@ export class AuthenticationService extends BaseService {
    */
   authenticate(params: Authenticate$Params, context?: HttpContext): Observable<AuthenticationResponse> {
     return this.authenticate$Response(params, context).pipe(
+      map((r: StrictHttpResponse<AuthenticationResponse>): AuthenticationResponse => r.body)
+    );
+  }
+
+  /** Path part for operation `googleAuthenticate()` */
+  static readonly GoogleAuthenticatePath = '/auth/authenticate/google';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `googleAuthenticate()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  googleAuthenticate$Response(params: GoogleAuthenticate$Params, context?: HttpContext): Observable<StrictHttpResponse<AuthenticationResponse>> {
+    return googleAuthenticate(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `googleAuthenticate$Response()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  googleAuthenticate(params: GoogleAuthenticate$Params, context?: HttpContext): Observable<AuthenticationResponse> {
+    return this.googleAuthenticate$Response(params, context).pipe(
       map((r: StrictHttpResponse<AuthenticationResponse>): AuthenticationResponse => r.body)
     );
   }
