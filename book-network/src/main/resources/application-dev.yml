@@ -31,6 +31,7 @@ spring:
 
 
 
+
 application:
   security:
     jwt:
@@ -43,6 +44,15 @@ application:
     upload:
       photos-output-path: ./upload
   google:
-    clientId: 897840734961-7mmsjme05o2av1c15q9rlhak755leg74.apps.googleusercontent.com
+    client-id:
+    client-secret:
+    redirect-uri:
+    scope: email,profile
+  facebook:
+    login-url: https://www.facebook.com/v21.0/
+    client-id:
+    client-secret:
+    redirect-uri:
+    scope:
 server:
   port: 8088
