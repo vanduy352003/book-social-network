@@ -5,6 +5,7 @@ import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -45,10 +46,15 @@ public class AuthenticationController {
         service.activateAccount(token);
     }
 
-    @PostMapping("/authenticate/google")
-    public ResponseEntity<AuthenticationResponse> googleAuthenticate(
-            @RequestBody String idToken
-    ) throws GeneralSecurityException, IOException {
-        return ResponseEntity.ok(service.authenticateWithGoogle(idToken));
+    @GetMapping("/social-login")
+    public ResponseEntity<SocialLoginResponse> socialLogin(
+            @RequestParam String socialName) throws BadRequestException {
+        return ResponseEntity.ok(service.getSocialLoginLink(socialName));
+    }
+
+    @PostMapping("/authenticate-social")
+    public ResponseEntity<AuthenticationResponse> authenticateSocial(
+            @RequestBody @Valid SocialLoginRequest request) throws GeneralSecurityException, IOException {
+        return ResponseEntity.ok(service.authenticateSocial(request));
     }
 }

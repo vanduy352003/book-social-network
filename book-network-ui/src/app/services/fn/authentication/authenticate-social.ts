@@ -7,13 +7,14 @@ import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
 import { AuthenticationResponse } from '../../models/authentication-response';
+import { SocialLoginRequest } from '../../models/social-login-request';
 
-export interface GoogleAuthenticate$Params {
-      body: string
+export interface AuthenticateSocial$Params {
+      body: SocialLoginRequest
 }
 
-export function googleAuthenticate(http: HttpClient, rootUrl: string, params: GoogleAuthenticate$Params, context?: HttpContext): Observable<StrictHttpResponse<AuthenticationResponse>> {
-  const rb = new RequestBuilder(rootUrl, googleAuthenticate.PATH, 'post');
+export function authenticateSocial(http: HttpClient, rootUrl: string, params: AuthenticateSocial$Params, context?: HttpContext): Observable<StrictHttpResponse<AuthenticationResponse>> {
+  const rb = new RequestBuilder(rootUrl, authenticateSocial.PATH, 'post');
   if (params) {
     rb.body(params.body, 'application/json');
   }
@@ -28,4 +29,4 @@ export function googleAuthenticate(http: HttpClient, rootUrl: string, params: Go
   );
 }
 
-googleAuthenticate.PATH = '/auth/authenticate/google';
+authenticateSocial.PATH = '/auth/authenticate-social';

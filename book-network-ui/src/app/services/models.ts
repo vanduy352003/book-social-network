@@ -11,3 +11,5 @@ export { PageResponseBookResponse } from './models/page-response-book-response';
 export { PageResponseBorrowedBookResponse } from './models/page-response-borrowed-book-response';
 export { PageResponseFeedbackResponse } from './models/page-response-feedback-response';
 export { RegistrationRequest } from './models/registration-request';
+export { SocialLoginRequest } from './models/social-login-request';
+export { SocialLoginResponse } from './models/social-login-response';
