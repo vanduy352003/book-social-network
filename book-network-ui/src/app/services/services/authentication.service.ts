@@ -11,13 +11,16 @@ import { StrictHttpResponse } from '../strict-http-response';
 
 import { authenticate } from '../fn/authentication/authenticate';
 import { Authenticate$Params } from '../fn/authentication/authenticate';
+import { authenticateSocial } from '../fn/authentication/authenticate-social';
+import { AuthenticateSocial$Params } from '../fn/authentication/authenticate-social';
 import { AuthenticationResponse } from '../models/authentication-response';
 import { confirm } from '../fn/authentication/confirm';
 import { Confirm$Params } from '../fn/authentication/confirm';
-import { googleAuthenticate } from '../fn/authentication/google-authenticate';
-import { GoogleAuthenticate$Params } from '../fn/authentication/google-authenticate';
 import { register } from '../fn/authentication/register';
 import { Register$Params } from '../fn/authentication/register';
+import { socialLogin } from '../fn/authentication/social-login';
+import { SocialLogin$Params } from '../fn/authentication/social-login';
+import { SocialLoginResponse } from '../models/social-login-response';
 
 @Injectable({ providedIn: 'root' })
 export class AuthenticationService extends BaseService {
@@ -79,28 +82,53 @@ export class AuthenticationService extends BaseService {
     );
   }
 
-  /** Path part for operation `googleAuthenticate()` */
-  static readonly GoogleAuthenticatePath = '/auth/authenticate/google';
+  /** Path part for operation `authenticateSocial()` */
+  static readonly AuthenticateSocialPath = '/auth/authenticate-social';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `googleAuthenticate()` instead.
+   * To access only the response body, use `authenticateSocial()` instead.
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  googleAuthenticate$Response(params: GoogleAuthenticate$Params, context?: HttpContext): Observable<StrictHttpResponse<AuthenticationResponse>> {
-    return googleAuthenticate(this.http, this.rootUrl, params, context);
+  authenticateSocial$Response(params: AuthenticateSocial$Params, context?: HttpContext): Observable<StrictHttpResponse<AuthenticationResponse>> {
+    return authenticateSocial(this.http, this.rootUrl, params, context);
   }
 
   /**
    * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `googleAuthenticate$Response()` instead.
+   * To access the full response (for headers, for example), `authenticateSocial$Response()` instead.
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  googleAuthenticate(params: GoogleAuthenticate$Params, context?: HttpContext): Observable<AuthenticationResponse> {
-    return this.googleAuthenticate$Response(params, context).pipe(
+  authenticateSocial(params: AuthenticateSocial$Params, context?: HttpContext): Observable<AuthenticationResponse> {
+    return this.authenticateSocial$Response(params, context).pipe(
       map((r: StrictHttpResponse<AuthenticationResponse>): AuthenticationResponse => r.body)
+    );
+  }
+
+  /** Path part for operation `socialLogin()` */
+  static readonly SocialLoginPath = '/auth/social-login';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `socialLogin()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  socialLogin$Response(params: SocialLogin$Params, context?: HttpContext): Observable<StrictHttpResponse<SocialLoginResponse>> {
+    return socialLogin(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `socialLogin$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  socialLogin(params: SocialLogin$Params, context?: HttpContext): Observable<SocialLoginResponse> {
+    return this.socialLogin$Response(params, context).pipe(
+      map((r: StrictHttpResponse<SocialLoginResponse>): SocialLoginResponse => r.body)
     );
   }
 

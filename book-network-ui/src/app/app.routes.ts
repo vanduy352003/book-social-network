@@ -15,8 +15,12 @@ export const routes: Routes = [
     component: LoginComponent
   },
   {
+    path: 'login/:provider',
+    component: LoginComponent
+  },
+  {
     path: 'register',
-    component: RegisterComponent
+    component: RegisterComponent,
   },
   {
     path: 'activate-account',
